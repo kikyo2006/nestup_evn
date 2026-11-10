@@ -105,12 +105,19 @@ class EVNDevice:
                 )
 
                 login_state = await self._api.login(
-                    self._area_name, self._username, self._password
+                    self._area_name,
+                    self._username,
+                    self._password,
+                    self._customer_id,
                 )
 
                 if login_state == CONF_SUCCESS:
                     self._data = await self._api.request_update(
-                        self._area_name, self._customer_id, self._monthly_start
+                        self._area_name,
+                        self._username,
+                        self._password,
+                        self._customer_id,
+                        self._monthly_start,
                     )
                     status = self._data.get("status")
 
@@ -121,7 +128,7 @@ class EVNDevice:
             )
 
         else:
-            _LOGGER.warn(
+            _LOGGER.warning(
                 "[EVN ID %s] Could not fetch new data - %s",
                 self._customer_id,
                 self._data.get("data"),
@@ -147,7 +154,9 @@ class EVNDevice:
             update_method=self._async_update,
             update_interval=DEFAULT_SCAN_INTERVAL,
         )
-        await coordinator.async_config_entry_first_refresh()
+        # Do not raise here: a failed first fetch (e.g. bad login) must not
+        # abort platform setup. Entities recover on the next scheduled poll.
+        await coordinator.async_refresh()
         self._coordinator = coordinator
 
     @property

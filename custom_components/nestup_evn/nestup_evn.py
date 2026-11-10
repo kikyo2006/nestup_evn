@@ -13,6 +13,7 @@ from typing import Any
 from dateutil import parser
 
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers.aiohttp_client import (
     async_create_clientsession,
     async_get_clientsession,
@@ -349,7 +350,7 @@ class EVNAPI:
         if self.is_token_expired():
             login_status = await self.login_evnhanoi(username, password)
             if login_status != CONF_SUCCESS:
-                raise ConfigEntryNotReady("Token expired and failed to reauthenticate")
+                raise UpdateFailed("Token expired and failed to reauthenticate")
                     
         headers = {
             "Authorization": f"Bearer {self._evn_area.get('access_token')}",
@@ -482,12 +483,12 @@ class EVNAPI:
         if not evn_session_expires:
             login_status = await self.login_evnhcmc(username, password)
             if login_status != CONF_SUCCESS:
-                raise ConfigEntryNotReady("Failed to reauthenticate due to invalid session expiration.")
+                raise UpdateFailed("Failed to reauthenticate due to invalid session expiration.")
         elif datetime.now(tz=timezone.utc) >= evn_session_expires:
             _LOGGER.info("Session expired. Attempting to login again...")
             login_status = await self.login_evnhcmc(username, password)
             if login_status != CONF_SUCCESS:
-                raise ConfigEntryNotReady("Session expired and failed to reauthenticate")       
+                raise UpdateFailed("Session expired and failed to reauthenticate")       
 
         headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
