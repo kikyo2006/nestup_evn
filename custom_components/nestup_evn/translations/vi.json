@@ -3,6 +3,7 @@
         "abort": {
             "already_configured": "Thiết bị liên kết với mã khách hàng này đã được thiết lập.",
             "not_supported": "Dựa vào mã khách hàng EVN: **{customer_id}**\nTự động xác định server EVN:\n- Công ty thành viên: **{evn_name}**\n- Địa điểm: **{evn_location}**\n- Chi nhánh EVN: **{evn_branch}**\n\nTuy nhiên, khu vực của bạn chưa được hỗ trợ bởi công cụ.\nXin hãy liên hệ **github@trvqhuy**.",
+            "reconfigure_successful": "Đã cập nhật tài khoản EVN.",
             "unknown": "Mã khách hàng không hợp lệ: **{customer_id}**"
         },
         "error": {
@@ -22,6 +23,14 @@
             },
             "evn_info": {
                 "description": "Dựa vào mã khách hàng EVN: **{customer_id}**\nTự động xác định server EVN:\n- Công ty thành viên: **{evn_name}**\n- Địa điểm: **{evn_location}**\n- Chi nhánh EVN: **{evn_branch}**\n\nXác nhận thông tin trên là đúng?"
+            },
+            "reconfigure": {
+                "data": {
+                    "password": "Mật khẩu",
+                    "username": "Tài khoản",
+                    "monthly_start": "Ngày bắt đầu hóa đơn"
+                },
+                "description": "Cập nhật tài khoản EVN cho:\n\n- Mã khách hàng: **{customer_id}**\n- Chi nhánh: **{evn_name}**\n\n`Lưu ý: EVNHCMC đăng nhập bằng số điện thoại của tài khoản CSKH. Đăng nhập sai nhiều lần có thể bị khoá tạm thời, hãy kiểm tra mật khẩu trên trang EVN trước.`"
             },
             "fulfill_data": {
                 "data": {

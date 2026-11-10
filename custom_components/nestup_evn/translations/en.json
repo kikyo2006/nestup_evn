@@ -3,6 +3,7 @@
         "abort": {
             "already_configured": "A device with your Customer ID has already been configured.",
             "not_supported": "Based on your Customer ID: **{customer_id}**\nAutomatically detect your EVN location:\n- EVN Company: **{evn_name}**\n- EVN Location: **{evn_location}**\n- EVN Branch: **{evn_branch}**\n\nUnfortunately, your EVN location has not been supported yet.\nPlease contact **github@trvqhuy**, together we could make it happen.",
+            "reconfigure_successful": "EVN account updated successfully.",
             "unknown": "Invalid EVN Customer ID: **{customer_id}**"
         },
         "error": {
@@ -22,6 +23,14 @@
             },
             "evn_info": {
                 "description": "Based on your Customer ID: **{customer_id}**\nAutomatically detect your EVN location:\n- EVN Company: **{evn_name}**\n- EVN Location: **{evn_location}**\n- EVN Branch: **{evn_branch}**\n\nAre the above informations true?"
+            },
+            "reconfigure": {
+                "data": {
+                    "password": "Password",
+                    "username": "Username",
+                    "monthly_start": "Billing Start Date"
+                },
+                "description": "Update the EVN account for:\n\n- Customer ID: **{customer_id}**\n- EVN Branch: **{evn_name}**\n\n`Note: EVNHCMC signs in with the phone number of your CSKH account. Wrong attempts can lock the account for a while, so check the password on the EVN website first.`"
             },
             "fulfill_data": {
                 "data": {

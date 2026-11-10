@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import logging
 from typing import Any
 import os
@@ -175,6 +176,66 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Handle a flow initialized by the user."""
         return await self.async_step_customer_id()
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Change the EVN account of an existing entry without deleting it."""
+
+        entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        data = dict(entry.data)
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            if self._branches_data is None:
+                await self._load_branches_data()
+
+            evn_info = nestup_evn.get_evn_info_sync(
+                data[CONF_CUSTOMER_ID], self._branches_data
+            )
+
+            if evn_info.get("status") != CONF_SUCCESS:
+                errors["base"] = evn_info.get("status")
+            else:
+                # Keep a pristine area: login stores session data inside it
+                clean_area = copy.deepcopy(evn_info["evn_area"])
+                data.update(user_input)
+                data[CONF_AREA] = evn_info["evn_area"]
+
+                self._user_data = data
+                self._api = nestup_evn.EVNAPI(self.hass, True)
+
+                # One login attempt only: repeated failures lock the account
+                result = await self._try_auth()
+                if result == CONF_SUCCESS:
+                    result = await self._verify_id()
+
+                if result == CONF_SUCCESS:
+                    data[CONF_AREA] = clean_area
+                    return self.async_update_reload_and_abort(
+                        entry, data=data, reason="reconfigure_successful"
+                    )
+
+                errors["base"] = result
+
+        schema: dict = {
+            vol.Required(CONF_USERNAME, default=data.get(CONF_USERNAME, "")): str,
+            vol.Required(CONF_PASSWORD): str,
+        }
+        if data.get(CONF_AREA, {}).get("date_needed"):
+            schema[
+                vol.Required(CONF_MONTHLY_START, default=data.get(CONF_MONTHLY_START, 24))
+            ] = vol.All(int, vol.Range(min=1, max=28))
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(schema),
+            errors=errors,
+            description_placeholders={
+                "customer_id": data[CONF_CUSTOMER_ID],
+                "evn_name": data.get(CONF_AREA, {}).get("name"),
+            },
+        )
 
     async def _try_auth(self):
         """Try authenticating credentials given by the user config flow."""
