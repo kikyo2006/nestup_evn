@@ -252,8 +252,9 @@ class EVNSensor(CoordinatorEntity, SensorEntity):
     @property
     def available(self) -> bool:
         """Return the availability of the sensor."""
+        # _data stays empty until the first successful fetch
         return (
-            self._device._data["status"] == CONF_SUCCESS
+            self._device._data.get("status") == CONF_SUCCESS
             and self.native_value is not None
         )
 
